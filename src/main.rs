@@ -5,6 +5,11 @@ const SCREEN_WIDTH: i32 = 80;
 const SCREEN_HEIGHT: i32 = 50;
 const FRAME_DURATION: f32 = 75.0;
 
+fn main() -> BError {
+    let ctx = BTermBuilder::simple80x50().build()?;
+    main_loop(ctx, State::new())
+}
+
 enum GameMode {
     Menu,
     Playing,
@@ -39,11 +44,6 @@ impl GameState for State {
     }
 }
 
-fn main() -> BError {
-    let ctx = BTermBuilder::simple80x50().build()?;
-    main_loop(ctx, State::new())
-}
-
 impl State {
     fn new() -> Self {
         Self {
@@ -64,7 +64,7 @@ impl State {
         where F: Fn(&mut State, &mut BTerm) -> ()
     {
         event_handler(self, ctx);
-        ctx.print_color_centered(8, CYAN, BLACK, "Welcome to snake");
+        ctx.print_color_centered(8, CYAN, BLACK, "Welcome to xxx");
         ctx.print_color_centered(12, CYAN, BLACK, "(P) Player Game");
         ctx.print_color_centered(16, CYAN, BLACK, "(Q) Quit Game");
     }
@@ -84,6 +84,8 @@ impl State {
         self.frame_time += ctx.frame_time_ms;
         if self.frame_time > FRAME_DURATION {
             self.frame_time = 0.0;
+
+
         }
 
         if let Some(timer) = self.timer {
