@@ -55,7 +55,7 @@ impl State {
     }
 
     fn restart(&mut self) {
-        *self = std::mem::replace(self, Self::new());
+        *self = Self::new();
         self.mode = GameMode::Playing;
         self.timer = Some(Instant::now());
     }
