@@ -21,6 +21,7 @@ struct State {
     frame_time: f32,
     score: i32,
     timer: Option<Instant>,
+    snake: Snake,
 }
 
 fn event_handler(state: &mut State, ctx: &mut BTerm) {
@@ -51,6 +52,7 @@ impl State {
             frame_time: 0.0,
             score: 0,
             timer: None,
+            snake: Snake::new(),
         }
     }
 
@@ -84,8 +86,6 @@ impl State {
         self.frame_time += ctx.frame_time_ms;
         if self.frame_time > FRAME_DURATION {
             self.frame_time = 0.0;
-
-
         }
 
         if let Some(timer) = self.timer {
@@ -97,6 +97,58 @@ impl State {
             } else {}
 
             //TODO 游戏实现的地方
+        }
+
+        self.snake.render(ctx);
+    }
+}
+
+#[derive(PartialEq)]
+enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+struct Snake {
+    segments: Vec<Point>,
+    direction: Direction,
+}
+
+impl Snake {
+    fn new() -> Self {
+        Self {
+            segments: vec![Point::new(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)],
+            direction: Direction::Right,
+        }
+    }
+
+    fn head(&self) -> Point {
+        self.segments[0]
+    }
+
+    fn render(&mut self, ctx: &mut BTerm) {
+        for segment in &self.segments {
+            ctx.set(segment.x, segment.y, WHITE, BLACK, to_cp437('@'));
+        }
+
+        if let Some(key) = ctx.key {
+            match key {
+                VirtualKeyCode::Up => if self.direction != Direction::Down {
+                    self.direction = Direction::Up
+                }
+                VirtualKeyCode::Down => if self.direction != Direction::Up {
+                    self.direction = Direction::Down
+                }
+                VirtualKeyCode::Left => if self.direction != Direction::Right {
+                    self.direction = Direction::Left
+                }
+                VirtualKeyCode::Right => if self.direction != Direction::Left {
+                    self.direction = Direction::Right
+                }
+                _ => {}
+            }
         }
     }
 }
