@@ -1,4 +1,4 @@
-use std::time::{Duration, Instant};
+use std::time::Instant;
 use bracket_lib::prelude::*;
 
 const SCREEN_WIDTH: i32 = 80;
