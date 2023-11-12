@@ -22,6 +22,7 @@ struct State {
     score: i32,
     timer: Option<Instant>,
     snake: Snake,
+    food: Food,
 }
 
 fn event_handler(state: &mut State, ctx: &mut BTerm) {
@@ -53,6 +54,7 @@ impl State {
             score: 0,
             timer: None,
             snake: Snake::new(),
+            food: Food::with_default(),
         }
     }
 
@@ -86,20 +88,45 @@ impl State {
         self.frame_time += ctx.frame_time_ms;
         if self.frame_time > FRAME_DURATION {
             self.frame_time = 0.0;
+
+            let new_head_point = self.snake.auto_move();
+            if !self.is_valid_move(new_head_point) || self.snake.colides_with_body(new_head_point) {
+                self.mode = GameMode::End;
+            }
+
+            self.snake.segments.insert(0, new_head_point);
+            if self.snake.head() == self.food.point {
+                self.generate_food();
+                self.score += 1;
+            } else {
+                self.snake.segments.pop();
+            }
         }
+
 
         if let Some(timer) = self.timer {
             ctx.print_centered(0, &format!("Time {:?}s Score {}", timer.elapsed().as_secs(), self.score));
-
-            // 这里计时器，方便用于游戏实现初期的基本调试，实现后这段代码将移除
-            if timer.elapsed() >= Duration::from_secs(5) {
-                self.mode = GameMode::End;
-            } else {}
-
-            //TODO 游戏实现的地方
         }
 
+
         self.snake.render(ctx);
+        self.food.render(ctx);
+    }
+
+    fn is_valid_move(&self, point: Point) -> bool {
+        point.x > 0 && point.x < SCREEN_WIDTH && point.y > 0 && point.y < SCREEN_HEIGHT
+    }
+
+    fn generate_food(&mut self) {
+        let mut rng = RandomNumberGenerator::new();
+
+        loop {
+            let (x, y) = (rng.range(1, SCREEN_WIDTH), rng.range(1, SCREEN_HEIGHT));
+            if !self.snake.segments.contains(&Point::new(x, y)) {
+                self.food = Food::new(x, y);
+                break;
+            }
+        }
     }
 }
 
@@ -150,5 +177,39 @@ impl Snake {
                 _ => {}
             }
         }
+    }
+
+    fn auto_move(&self) -> Point {
+        let head_point = self.head();
+        match self.direction {
+            Direction::Up => Point::new(head_point.x, head_point.y - 1),
+            Direction::Down => Point::new(head_point.x, head_point.y + 1),
+            Direction::Left => Point::new(head_point.x - 1, head_point.y),
+            Direction::Right => Point::new(head_point.x + 1, head_point.y),
+        }
+    }
+
+    fn colides_with_body(&self, new_head_point: Point) -> bool {
+        self.segments[1..].contains(&new_head_point)
+    }
+}
+
+struct Food {
+    point: Point,
+}
+
+impl Food {
+    fn new(x: i32, y: i32) -> Self {
+        Self {
+            point: Point::new(x, y)
+        }
+    }
+
+    fn with_default() -> Self {
+        Self::new(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4)
+    }
+
+    fn render(&self, ctx: &mut BTerm) {
+        ctx.set(self.point.x, self.point.y, GREEN, BLACK, to_cp437('*'))
     }
 }
