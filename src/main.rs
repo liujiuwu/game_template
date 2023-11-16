@@ -198,6 +198,17 @@ struct Food {
     point: Point,
 }
 
+use std::ops::Deref;
+
+impl Deref for Food {
+    type Target = Point;
+
+    fn deref(&self) -> &Self::Target {
+        &self.point
+    }
+}
+
+
 impl Food {
     fn new(x: i32, y: i32) -> Self {
         Self {
@@ -210,6 +221,6 @@ impl Food {
     }
 
     fn render(&self, ctx: &mut BTerm) {
-        ctx.set(self.point.x, self.point.y, GREEN, BLACK, to_cp437('*'))
+        ctx.set(self.x, self.y, GREEN, BLACK, to_cp437('*'))
     }
 }
