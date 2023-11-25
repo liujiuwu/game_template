@@ -1,4 +1,4 @@
-[https://liujiuwu.github.io/game_template/]在线体验
+[在线体验](https://liujiuwu.github.io/game_template/)
 
 # 安装相关工具
 
