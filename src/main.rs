@@ -61,7 +61,7 @@ impl State {
     fn restart(&mut self) {
         *self = Self::new();
         self.mode = GameMode::Playing;
-        self.timer = Some(Instant::now());
+        //self.timer = Some(Instant::now());
     }
 
     fn menu<F>(&mut self, ctx: &mut BTerm, event_handler: F)
@@ -104,9 +104,9 @@ impl State {
         }
 
 
-        if let Some(timer) = self.timer {
-            ctx.print_centered(0, &format!("Time {:?}s Score {}", timer.elapsed().as_secs(), self.score));
-        }
+        //if let Some(timer) = self.timer {
+            ctx.print_centered(1, &format!("Score {}", self.score));
+        //}
 
 
         self.snake.render(ctx);
