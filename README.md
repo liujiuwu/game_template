@@ -1,4 +1,4 @@
-在线体验地址： [https://liujiuwu.github.io/game_template/]https://liujiuwu.github.io/game_template/
+[https://liujiuwu.github.io/game_template/]在线体验
 
 # 安装相关工具
 
